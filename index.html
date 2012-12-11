@@ -243,18 +243,31 @@ CoolClock.prototype = {
 		this.ctx.restore();
 	},
 
-	textAtAngle: function(theText,angleFraction,skin,offset) {
+	textAtAngle: function(theText,angleFraction,skin) {
 		this.ctx.save();
 		this.ctx.translate(this.renderRadius,this.renderRadius);
-		this.ctx.rotate((Math.PI * (2.0 * angleFraction - 0.5)));			
+		this.ctx.rotate((Math.PI * (2.0 * angleFraction - 0.5)));		
 		this.ctx.font = skin.font;
-				
-		this.ctx.textBaseline = 'middle';
 		
-		this.ctx.fillText(theText, 40, 0);
-		
-		console.log( angleFraction, 80 );
+		var tSize = this.ctx.measureText(theText);
+		// TextMetrics rarely returns a height property: use baseline instead.
+		if (!tSize.height) {
+			tSize.height = 0;
+			this.ctx.textBaseline = 'middle';
+		}
 				
+		if( angleFraction > 0.5 )
+		{
+			this.ctx.rotate(Math.PI);
+			this.ctx.translate(-(this.renderRadius),0);
+			this.ctx.fillText(theText, (this.renderRadius - skin.startAt), 0);
+		}
+		else
+		{
+			this.ctx.fillText(theText, this.renderRadius-tSize.width-(this.renderRadius-skin.startAt)-1, 0);
+		}
+				
+								
 		this.ctx.restore();
 	},
 
@@ -282,7 +295,7 @@ CoolClock.prototype = {
 		// Draw the tick marks. Every 5th one is a big one
 		for (var i=0;i<720;i++) {
 			if(!(i%180)) {
-				this.textAtAngle(labels[i],this.tickAngle(i),skin.hugeIndicator,50);
+				this.textAtAngle(labels[i],this.tickAngle(i),skin.hugeIndicator);
 				this.radialLineAtAngle(this.tickAngle(i),skin.hugeIndicator);
 			} else if(!(i%60)) {
 				this.textAtAngle(labels[i],this.tickAngle(i),skin.largeIndicator,50);
