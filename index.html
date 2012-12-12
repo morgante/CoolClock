@@ -1,910 +1,173 @@
-
-<!DOCTYPE html>
-<html>
+<!DOCTYPE HTML>
+<html lang="en-US">
 <head>
-<title property="dc:title">Telling the Times</title>
-<meta name="Description" content="Final Essay" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link id="default_view" href="plain" />
-<link id="primary_role" href="http://scalar.usc.edu/2012/01/scalar-ns#Composite" />
-<link id="parent" href="http://scalar.usc.edu/students/machine-dreams/" />
-<link id="approot" href="http://scalar.usc.edu/students/system/application/" />
-<link type="text/css" rel="stylesheet" href="http://scalar.usc.edu/students/system/application/views/modules/cover/login.css" />
-<link type="text/css" rel="stylesheet" href="http://scalar.usc.edu/students/system/application/views/modules/cover/title.css" />
-<link type="text/css" rel="stylesheet" href="http://scalar.usc.edu/students/system/application/views/modules/chrome/honeydew/content.css" />
-<link type="text/css" rel="stylesheet" href="http://scalar.usc.edu/students/system/application/views/modules/chrome/honeydew/themes/slate.css" />
-<link  href="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/jquery-ui-1.8.12.custom.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/jquery-1.7.min.js"></script>
-<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/jquery-ui-1.8.12.custom.min.js"></script>
-<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/common.js"></script>
-<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/soundcloudsdk.js"></script>
-<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/soundcloudapi.js"></script>
-<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/yepnope.1.5.3-min.js"></script>
-<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/yepnope.css.js"></script>
-<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/main.js"></script>
-<script type="text/javascript">
+	<meta charset="UTF-8">
+	<title>Telling the Times</title>
 	
-// Constructor for CoolClock objects
-window.CoolClock = function(options) {
-	return this.init(options);
-}
-
-// Config contains some defaults, and clock skins
-CoolClock.config = {
-	tickDelay: 1000,
-	longTickDelay: 15000,
-	defaultRadius: 85,
-	renderRadius: 100,
-	defaultSkin: "chunkySwiss",
-	defaultFont: "15px sans-serif",
-	// Should be in skin probably...
-	// (TODO: allow skinning of digital display)
-	showSecs: true,
-	showAmPm: true,
-
-	skins:	{
-		// There are more skins in moreskins.js
-		// Try making your own skin by copy/pasting one of these and tweaking it
-		swissRail: {
-			outerBorder: { lineWidth: 2, radius:95, color: "black", alpha: 1 },
-			smallIndicator: { lineWidth: 1, startAt: 88, endAt: 92, color: "black", alpha: 1 },
-			largeIndicator: { lineWidth: 4, startAt: 79, endAt: 92, color: "black", alpha: 1, font: "8px sans-serif" },
-			hugeIndicator: { lineWidth: 4, startAt: 70, endAt: 92, color: "black", alpha: 1, font: "20px sans-serif" },
-/* 			hourHand: { lineWidth: 8, startAt: -15, endAt: 50, color: "black", alpha: 1 }, */
-/* 			minuteHand: { lineWidth: 7, startAt: -15, endAt: 75, color: "black", alpha: 1 }, */
-			secondHand: { lineWidth: 1, startAt: -20, endAt: 85, color: "red", alpha: 1 },
-			secondDecoration: { lineWidth: 1, startAt: 70, radius: 4, fillColor: "red", color: "red", alpha: 1 }
-		},
-		chunkySwiss: {
-			outerBorder: { lineWidth: 4, radius:97, color: "black", alpha: 1 },
-			smallIndicator: { lineWidth: 4, startAt: 89, endAt: 93, color: "black", alpha: 1 },
-			largeIndicator: { lineWidth: 8, startAt: 80, endAt: 93, color: "black", alpha: 1 },
-			hourHand: { lineWidth: 12, startAt: -15, endAt: 60, color: "black", alpha: 1 },
-			minuteHand: { lineWidth: 10, startAt: -15, endAt: 85, color: "black", alpha: 1 },
-			secondHand: { lineWidth: 4, startAt: -20, endAt: 85, color: "red", alpha: 1 },
-			secondDecoration: { lineWidth: 2, startAt: 70, radius: 8, fillColor: "red", color: "red", alpha: 1 }
-		},
-		chunkySwissOnBlack: {
-			outerBorder: { lineWidth: 4, radius:97, color: "white", alpha: 1 },
-			smallIndicator: { lineWidth: 4, startAt: 89, endAt: 93, color: "white", alpha: 1 },
-			largeIndicator: { lineWidth: 8, startAt: 80, endAt: 93, color: "white", alpha: 1 },
-			hourHand: { lineWidth: 12, startAt: -15, endAt: 60, color: "white", alpha: 1 },
-			minuteHand: { lineWidth: 10, startAt: -15, endAt: 85, color: "white", alpha: 1 },
-			secondHand: { lineWidth: 4, startAt: -20, endAt: 85, color: "red", alpha: 1 },
-			secondDecoration: { lineWidth: 2, startAt: 70, radius: 8, fillColor: "red", color: "red", alpha: 1 }
-		}
-
-	},
-
-	// Test for IE so we can nurse excanvas in a couple of places
-	isIE: !!document.all,
-
-	// Will store (a reference to) each clock here, indexed by the id of the canvas element
-	clockTracker: {},
-
-	// For giving a unique id to coolclock canvases with no id
-	noIdCount: 0
-};
-
-// Define the CoolClock object's methods
-CoolClock.prototype = {
-
-	// Initialise using the parameters parsed from the colon delimited class
-	init: function(options) {
-		// Parse and store the options
-		this.canvasId       = options.canvasId;
-		this.skinId         = options.skinId || CoolClock.config.defaultSkin;
-		this.font           = options.font || CoolClock.config.defaultFont;
-		this.displayRadius  = options.displayRadius || CoolClock.config.defaultRadius;
-		this.renderRadius   = options.renderRadius || CoolClock.config.renderRadius;
-		this.showSecondHand = typeof options.showSecondHand == "boolean" ? options.showSecondHand : true;
-		this.gmtOffset      = (options.gmtOffset != null && options.gmtOffset != '') ? parseFloat(options.gmtOffset) : null;
-		this.showDigital    = typeof options.showDigital == "boolean" ? options.showDigital : false;
-		this.logClock       = typeof options.logClock == "boolean" ? options.logClock : false;
-		this.logClockRev    = typeof options.logClock == "boolean" ? options.logClockRev : false;
-
-		this.tickDelay      = CoolClock.config[ this.showSecondHand ? "tickDelay" : "longTickDelay" ];
-
-		// Get the canvas element
-		this.canvas = document.getElementById(this.canvasId);
-
-		// Make the canvas the requested size. It's always square.
-		this.canvas.setAttribute("width",this.displayRadius*2);
-		this.canvas.setAttribute("height",this.displayRadius*2);
-		this.canvas.style.width = this.displayRadius*2 + "px";
-		this.canvas.style.height = this.displayRadius*2 + "px";
-
-		// Determine by what factor to relate skin values to canvas positions.
-		// renderRadius is the max skin positional value before leaving the
-		// canvas. displayRadius is half the width and height of the canvas in
-		// pixels. If they are equal, there is a 1:1 relation of skin position
-		// values to canvas pixels. Setting both to 200 allows 100px of space
-		// around clock skins to add your own things: this is due to current
-		// skins maxing out at a positional value of 100.
-		this.scale = this.displayRadius / this.renderRadius;
-
-		// Initialise canvas context
-		this.ctx = this.canvas.getContext("2d");
-		this.ctx.scale(this.scale,this.scale);
-
-		// Keep track of this object
-		CoolClock.config.clockTracker[this.canvasId] = this;
-
-		// should we be running the clock?
-		this.active = false;
-
-		return this;
-	},
-
-	// Draw a circle at point x,y with params as defined in skin
-	fullCircleAt: function(x,y,skin) {
-		this.ctx.save();
-		this.ctx.globalAlpha = skin.alpha;
-		this.ctx.lineWidth = skin.lineWidth;
-
-		if (!CoolClock.config.isIE) {
-			this.ctx.beginPath();
-		}
-
-		if (CoolClock.config.isIE) {
-			// excanvas doesn't scale line width so we will do it here
-			this.ctx.lineWidth = this.ctx.lineWidth * this.scale;
-		}
-
-		this.ctx.arc(x, y, skin.radius, 0, 2*Math.PI, false);
-
-		if (CoolClock.config.isIE) {
-			// excanvas doesn't close the circle so let's fill in the tiny gap
-			this.ctx.arc(x, y, skin.radius, -0.1, 0.1, false);
-		}
-
-		if (skin.fillColor) {
-			this.ctx.fillStyle = skin.fillColor
-			this.ctx.fill();
-		}
-		if (skin.color) {
-			this.ctx.strokeStyle = skin.color;
-			this.ctx.stroke();
-		}
-		this.ctx.restore();
-	},
-
-	// Draw some text centered vertically and horizontally
-	drawTextAt: function(theText,x,y,skin) {
-		if (!skin) skin = this.getSkin();
-		this.ctx.save();
-		this.ctx.font = skin.font || this.font;
-		var tSize = this.ctx.measureText(theText);
-		// TextMetrics rarely returns a height property: use baseline instead.
-		if (!tSize.height) {
-			tSize.height = 0;
-			this.ctx.textBaseline = 'middle';
-		}
-		this.ctx.fillText(theText, x - tSize.width/2, y - tSize.height/2);
-		this.ctx.restore();
-	},
-
-	lpad2: function(num) {
-		return (num < 10 ? '0' : '') + num;
-	},
-
-	tickAngle: function(second) {
-		// Log algorithm by David Bradshaw
-		var tweak = 3; // If it's lower the one second mark looks wrong (?)
-		if (this.logClock) {
-			return second == 0 ? 0 : (Math.log(second*tweak) / Math.log(720*tweak));
-		}
-		else if (this.logClockRev) {
-			// Flip the seconds then flip the angle (trickiness)
-			second = (720 - second) % 720;
-			return 1.0 - (second == 0 ? 0 : (Math.log(second*tweak) / Math.log(720*tweak)));
-		}
-		else {
-			return second/720.0;
-		}
-	},
-
-	timeText: function(hour,min,sec) {
-		var c = CoolClock.config;
-		return '' +
-			(c.showAmPm ? ((hour%12)==0 ? 12 : (hour%12)) : hour) + ':' +
-			this.lpad2(min) +
-			(c.showSecs ? ':' + this.lpad2(sec) : '') +
-			(c.showAmPm ? (hour < 12 ? ' am' : ' pm') : '')
-		;
-	},
-
-	// Draw a radial line by rotating then drawing a straight line
-	// Ha ha, I think I've accidentally used Taus, (see http://tauday.com/)
-	radialLineAtAngle: function(angleFraction,skin) {
-		this.ctx.save();
-		this.ctx.translate(this.renderRadius,this.renderRadius);
-		this.ctx.rotate(Math.PI * (2.0 * angleFraction - 0.5));
-		this.ctx.globalAlpha = skin.alpha;
-		this.ctx.strokeStyle = skin.color;
-		this.ctx.lineWidth = skin.lineWidth;
-		if (CoolClock.config.isIE)
-			// excanvas doesn't scale line width so we will do it here
-			this.ctx.lineWidth = this.ctx.lineWidth * this.scale;
-
-		if (skin.radius) {
-			this.fullCircleAt(skin.startAt,0,skin)
-		}
-		else {
-			this.ctx.beginPath();
-			this.ctx.moveTo(skin.startAt,0)
-			this.ctx.lineTo(skin.endAt,0);
-			this.ctx.stroke();
-		}
-		this.ctx.restore();
-	},
-
-	textAtAngle: function(theText,angleFraction,skin) {
-		this.ctx.save();
-		this.ctx.translate(this.renderRadius,this.renderRadius);
-		this.ctx.rotate((Math.PI * (2.0 * angleFraction - 0.5)));		
-		this.ctx.font = skin.font;
-		
-		var tSize = this.ctx.measureText(theText);
-		// TextMetrics rarely returns a height property: use baseline instead.
-		if (!tSize.height) {
-			tSize.height = 0;
-			this.ctx.textBaseline = 'middle';
-		}
-				
-		if( angleFraction > 0.5 )
-		{
-			this.ctx.rotate(Math.PI);
-			this.ctx.translate(-(this.renderRadius),0);
-			this.ctx.fillText(theText, (this.renderRadius - skin.startAt), 0);
-		}
-		else
-		{
-			this.ctx.fillText(theText, this.renderRadius-tSize.width-(this.renderRadius-skin.startAt)-1, 0);
-		}
-				
-								
-		this.ctx.restore();
-	},
-
-	render: function(sec) {
-		// Get the skin
-		var skin = this.getSkin();
-
-		// Clear
-		this.ctx.clearRect(0,0,this.renderRadius*2,this.renderRadius*2);
-
-		// Draw the outer edge of the clock
-		if (skin.outerBorder)
-			this.fullCircleAt(this.renderRadius,this.renderRadius,skin.outerBorder);
-
-		// Store clock labels here; probably should be elsewhere
-		var labels = {
-			0: "Time",
-			60: "Revolution",
-			120: "Enterprise",
-			180: "Film",
-			360: "Plot",
-			540: "Story"
-		}
-
-		// Draw the tick marks. Every 5th one is a big one
-		for (var i=0;i<720;i++) {
-			if(!(i%180)) {
-				this.textAtAngle(labels[i],this.tickAngle(i),skin.hugeIndicator);
-				this.radialLineAtAngle(this.tickAngle(i),skin.hugeIndicator);
-			} else if(!(i%60)) {
-				this.textAtAngle(labels[i],this.tickAngle(i),skin.largeIndicator,50);
-				this.radialLineAtAngle(this.tickAngle(i),skin.largeIndicator);
-			} else if(!(i%5))  {
-				this.radialLineAtAngle(this.tickAngle(i),skin.smallIndicator)
-			}
-		}
-				
-		// Draw the hands
-
-		this.radialLineAtAngle(this.tickAngle(180),skin.secondHand);
-
-		if (this.extraRender) {
-			this.extraRender(hour,min,sec);
-		}
-	},
-
-	// Check the position and display the clock
-	refreshDisplay: function() {
-		var s = $(window).scrollTop(),
-        d = $(document).height(),
-        c = $(window).height();
-        scrollPercent = (s / (d-c)) * 100;
-
-        console.log("Current scroll percent: " + scrollPercent);
+	<link type="text/css" rel="stylesheet" href="http://scalar.usc.edu/students/system/application/views/modules/cover/login.css" />
+	<link type="text/css" rel="stylesheet" href="http://scalar.usc.edu/students/system/application/views/modules/cover/title.css" />
+	<link type="text/css" rel="stylesheet" href="http://scalar.usc.edu/students/system/application/views/modules/chrome/honeydew/content.css" />
+	<link type="text/css" rel="stylesheet" href="http://scalar.usc.edu/students/system/application/views/modules/chrome/honeydew/themes/slate.css" />
+	<link  href="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/jquery-ui-1.8.12.custom.css" rel="stylesheet" type="text/css" />
 	
-/*
-		var now = new Date();
-		if (this.gmtOffset != null) {
-			// Use GMT + gmtOffset
-			var offsetNow = new Date(now.valueOf() + (this.gmtOffset * 1000 * 60 * 60));
-			this.render(offsetNow.getUTCHours(),offsetNow.getUTCMinutes(),offsetNow.getUTCSeconds());
-		}
-		else {
-			// Use local time
-			this.render(now.getHours(),now.getMinutes(),now.getSeconds());
-		}
-*/
-	},
-
-	// Set timeout to trigger a tick in the future
-	nextTick: function() {
-		this.tickTimeout = setTimeout("CoolClock.config.clockTracker['"+this.canvasId+"'].tick()",this.tickDelay);
-	},
-
-	// Check the canvas element hasn't been removed
-	stillHere: function() {
-		return document.getElementById(this.canvasId) != null;
-	},
-
-	// Stop this clock
-	stop: function() {
-		this.active = false;
-		clearTimeout(this.tickTimeout);
-	},
-
-	// Start this clock
-	start: function() {
-		if (!this.active) {
-			this.active = true;
-			this.tick();
-		}
-	},
-
-	// Main tick handler. Refresh the clock then setup the next tick
-	tick: function() {
-		if (this.stillHere() && this.active) {
-			this.refreshDisplay()
-			this.nextTick();
-		}
-	},
-
-	getSkin: function() {
-		var skin = CoolClock.config.skins[this.skinId];
-		if (!skin) skin = CoolClock.config.skins[CoolClock.config.defaultSkin];
-		return skin;
-	}
-};
-
-// Find all canvas elements that have the CoolClock class and turns them into clocks
-CoolClock.findAndCreateClocks = function() {
-	// (Let's not use a jQuery selector here so it's easier to use frameworks other than jQuery)
-	var canvases = document.getElementsByTagName("canvas");
-	for (var i=0;i<canvases.length;i++) {
-		// Pull out the fields from the class. Example "CoolClock:chunkySwissOnBlack:1000"
-		var fields = canvases[i].className.split(" ")[0].split(":");
-		if (fields[0] == "CoolClock") {
-			if (!canvases[i].id) {
-				// If there's no id on this canvas element then give it one
-				canvases[i].id = '_coolclock_auto_id_' + CoolClock.config.noIdCount++;
-			}
-			// Create a clock object for this element
-			new CoolClock({
-				canvasId:       canvases[i].id,
-				skinId:         fields[1],
-				displayRadius:  fields[2],
-				showSecondHand: fields[3]!='noSeconds',
-				gmtOffset:      fields[4],
-				showDigital:    fields[5]=='showDigital',
-				logClock:       fields[6]=='logClock',
-				logClockRev:    fields[6]=='logClockRev'
-			});
-		}
-	}
-};
-
-// If you don't have jQuery then you need a body onload like this: <body onload="CoolClock.findAndCreateClocks()">
-// If you do have jQuery and it's loaded already then we can do it right now
-if (window.jQuery) jQuery(document).ready(CoolClock.findAndCreateClocks);
-
-// Handle our scrolling magic
-writtenChronograph = {
-	getScrolled: function() {
-		return $(window).scrollTo();
-	},
-	checkPosition: function() {
-		percent = this.getScrolled();
-        console.log("Current scroll percent: " + percent);
-        
-        setTimeout("writtenChronograph.checkPosition()",1);
-	},
-	init: function() {
-		this.checkPosition();
-/* 		this.focusOn(jQuery('#essay li.active')); */
-	}
-}
-
-jQuery(document).ready(writtenChronograph.init());
-</script>
-<style>
-.student{width: 150px; height: 170px;float: left; margin: 30px 0 0 40px;}
-.studentthumb{width: 150px; height: 150px;background: #ccc;}
-.studentname{width: 150px; height: 20px; text-align: center;}
-#content_wrapper{min-height: 700px;}
-</style>
-<style type="text/css" media="screen">
-body {
-	background-color: #FFFFFF !important;
-	background-image: none !important;
-}
-#content_wrapper {
-	background: transparent !important;
-}
-.left, .middle.cover, .pathnavs, #reply_list, .path_table, .middle.footer {
-	display: none;
-}
-#clock {
-	position: fixed;
-	left: 100px;
-	top: 120px;
-}
-#essay {
-	display: block;
-	width: 800px;
-	position: absolute;
-	top: 10px;
-	left: 800px;
-}
-#essay li {
-	opacity: 1;
-	height:20px;
-}
-#blur .blur1, #blur .blur2 {
-	position: fixed;
-	width: 800px;
-	height: 1000px;
-	left: 1000px;
-	background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* IE10+ */
-	background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C */
-	background: black;
-}
-#blur .blur1 {
-	top: -800px;
-}
-#blur .blur2 {
-	top: 220px;
-}
-</style>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js" type="text/javascript" charset="utf-8"></script>
+	
+	<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/common.js"></script>
+	<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/soundcloudsdk.js"></script>
+	<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/soundcloudapi.js"></script>
+	<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/yepnope.1.5.3-min.js"></script>
+	<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/yepnope.css.js"></script>
+	<script type="text/javascript" src="http://scalar.usc.edu/students/system/application/views/arbors/honeydew/main.js"></script>
+	
+	<style>
+	.student{width: 150px; height: 170px;float: left; margin: 30px 0 0 40px;}
+	.studentthumb{width: 150px; height: 150px;background: #ccc;}
+	.studentname{width: 150px; height: 20px; text-align: center;}
+	#content_wrapper{min-height: 700px;}
+	#path_of_list{display:none;}
+	</style>
+	
+	<link rel="stylesheet" href="style.css" type="text/css" media="screen" title="morgante style" />
+	
+	<script src="coolclock.js" type="text/javascript" charset="utf-8"></script>
+	
 </head>
-<body style="background-image:url(http://scalar.usc.edu/students/machine-dreams/media/mdbg.jpg);">
-<div class="left">
-<div id="scalarnav"></div>
-</div>
-
-<div class="middle cover">
-<div class="login"><a href="http://scalar.usc.edu/students/system/login?redirect_url=%2Fstudents%2Fmachine-dreams%2Ftelling-the-times%3Fpath%3Dmorgante-pell">Sign in</a> or <a href="http://scalar.usc.edu/students/system/register?redirect_url=%2Fstudents%2Fmachine-dreams%2Ftelling-the-times%3Fpath%3Dmorgante-pell">register</a><br />for additional privileges<br /></div>
-<h2 class="cover_title">MACHINE DREAMS</h2>
-<div class="cover_authors"><a href="http://scalar.usc.edu/students/machine-dreams/users/233">Alexei Taylor</a>, Author</div>
-</div>
-
-<div class="middle" id="middle_column">
-<!-- Path bar -->
-<div class="pathnavs">
-  <div class="path_nav_path current_path">
-<div class="path_left"><div class="path_nav_color path_nav_color_primary path_nav_color_expand_height" style="background:"></div><a class="path_title_link" href="http://scalar.usc.edu/students/machine-dreams/morgante-pell" title="">Morgante Pell</a><span style="white-space:nowrap;">, page 2 of 2<span></div>
-<div class="path_right "><div class="wrapper"><a class="path_nav_previous_btn" href="http://scalar.usc.edu/students/machine-dreams/ethnography-of-a-mouse?path=morgante-pell" title="Ethnography of a Mouse">Previous page on path</a>&nbsp; &nbsp; &nbsp; &nbsp;<a class="path_nav_next_btn" href="http://scalar.usc.edu/students/machine-dreams/index">Path end, return home</a></div></div>
-<br clear="both" />
-<div class="path_bottom">
-<div class="text_wrapper">Other paths that intersect here:</div>
-	  			<div class="path_nav_color pulldown" style="background:">&nbsp;
-	  				<ul class="pulldown-content pulldown-content-nudge-center pulldown-content-nudge-up pulldown-content-no-mouseover nodots">
-						<li class="color_path_title"><div class="path_nav_color path_nav_color_expand_height" style="background:"></div> <a href="telling-the-times?path=critical-essays">Critical Essays</a></li>
-						<li>Page 1 of 10 in path</li>
-					</ul>		
-				</div>
-        		<br clear="both" />
-</div>
-  </div>
-</div><noscript>
-<div class="error"><p>This site requires Javascript to be turned on. Please <a href="http://www.btny.purdue.edu/enablejavascript.html">enable Javascript</a> and reload the page.</p></div>
-</noscript>
-<div class="error" id="ie_warning"><p>You appear to be using an older verion of Internet Explorer.  For the best experience please upgrade your IE version or switch to a another web browser.</p></div>
-<div class="content" id="content_wrapper">
-<!-- Content: Plain view -->
-<div id="content"><h4 class="content_title">Telling the Times</h4>
-<div id="clock">
-	<canvas id="clk1" class="CoolClock:swissRail:300 myClock"></canvas>
-</div>
-
-<div id="essay">
-	<div id="blur">
-		<div class="blur1">SMITHSON</div>
-		<div class="blur2">JOHNS</div>
-	</div>
-	<div id="section-0" class="essay section">
-		<h5>0</h5>
-		<ul>
-			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</li>
-			<li>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-			<li>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</li>
-			<li>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-			<li>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li class="active">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</li>
-			<li>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-			<li>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</li>
-			<li>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-			<li>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-						<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-		</ul>
-	</div>
-</div>
-
-<!-- Reply list -->
-<div id="reply_list">
-  
- 	<a href="javascript:;" class="inline_icon_link reply reply_link">Comment on this page</a>
- 
-  
-    
-  
-	<div class="maximize" id="comments" style="opacity: 1;">
-		<div class="maximize_fade"></div>
-		<div class="maximize_content maximize_content_static_width">	
-			<div class="mediaElementHeader mediaElementHeaderWithNavBar">
-				<ul class="nav_bar_options">
-					<span class="downArrow"><li id="max_desc_button" class="sel" title="Comments for this page">Local Discussion</li></span>
-					<span class="noArrow"><li id="max_perm_button" title="Load comments in a new browser window" onclick="popoutComments();">Popout</li></span>
-				</ul>
-				<span class="close_link"><a id="close_link" title="Close" href="javascript:;">&nbsp;</a></span>
-				<p class="mediaElementAlignRight" style="display: block; "></p>
-			</div>
-			<div class="comments">
-				<h4 class="content_title">Discussion of "Telling the Times"</h4>
-							
-				<div class="discussion">
+<body>
 	
-<p>No comments yet.</p>				</div><!--discussion-->  
-
-	<div id="comment_contribute">
-		<h4 class="content_title">Add your voice to this discussion.</h4>
-		<p id="checking_logged_in_status">Checking your signed in status ...</p>
-		<p id="commenter_logged_in" style="display:none;">You are signed in as <a title="Your user page" href=""></a> (<a href="javascript:void(null);" title="Logout">Sign out</a>).&nbsp; To comment, enter your name and text below. Comments are moderated. Please be respectful.</p>
-		<p id="commenter_anonymous" style="display:none;">To comment, enter your name and text below (you can also <a href="http://scalar.usc.edu/students/system/login?redirect_url=%252Fstudents%252Fmachine-dreams%252Ftelling-the-times%253Fpath%253Dmorgante-pell%2523comments">sign in</a> to use your Scalar account).<br />Comments are moderated. Please be respectful.</p>
-		<div id="comment_form_wrapper" style="display:none;">
-			<form id="comment_contribute_form" method="post" action="http://scalar.usc.edu/students/machine-dreams/telling-the-times#comments" onsubmit="ajaxComment();return false;">
-			<input type="hidden" name="action" value="ADD" />
-			<input type="hidden" name="scalar:child_urn" value="urn:scalar:version:26387" />		
-			<input type="hidden" name="dcterms:description" value="" />
-			<input type="hidden" name="user" value="0" id="comment_user_id" />
-			<input type="hidden" name="recaptcha_public_key" value="6LcXg8sSAAAAAHH0MII0Enz8_u4QHQdStcJY1YGM" />
-			<table class="form_fields comment_form_table"><tbody>
-			<tr id="comment_your_name"><td class="field">Your name</td><td class="value"><input type="text" name="fullname" value="" class="input_text"></td></tr>
-			<tr><td class="field">Comment title</td><td class="value"><input type="text" name="dcterms:title" value="" class="input_text"></td></tr>
-			<tr><td class="field">Content<br /><small style="color:#222222;">&lt;a&gt;&lt;i&gt;&lt;u&gt;&lt;b&gt;</small></td><td class="value"><textarea name="sioc:content" value="" rows="6" class="input_text"></textarea></td></tr>
-			<tr id="comment_captcha"><td class="field">CAPTCHA<br /></td><td class="value" id="comment_captcha_wrapper"></td></tr>
-			<tr><td></td><td class="form_buttons" colspan="4"><input type="submit" class="generic_button large" title="Post comment" value="Post comment" /></td></tr>
-			</tbody></table>
-			</form>
+	<div class="left">
+		<div id="scalarnav" style="margin-top: 139.31666564941406px;">
+		<div class="icon_link home">MACHINE DREAMS</div>
+		<div class="body">
+			<p class="mainMenuItem">1. <a href="http://scalar.usc.edu/students/machine-dreams/index"><b class="displayTitle">Marhaba.  Welcome.</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">2. <a href="http://scalar.usc.edu/students/machine-dreams/samia-meziane"><b class="displayTitle">Samia Meziane</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">3. <a href="http://scalar.usc.edu/students/machine-dreams/class-bibliography"><b class="displayTitle">Class Bibliography</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">4. <a href="http://scalar.usc.edu/students/machine-dreams/image-genealogy"><b class="displayTitle">Image and Commodity Ethnography</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">5. <a href="http://scalar.usc.edu/students/machine-dreams/critical-essays"><b class="displayTitle">Critical Essays</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">6. <a href="http://scalar.usc.edu/students/machine-dreams/andres-rodriguez-caceres"><b class="displayTitle">Andres Rodriguez Caceres</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">7. <a href="http://scalar.usc.edu/students/machine-dreams/clare-hennig"><b class="displayTitle">Clare Hennig</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">8. <a href="http://scalar.usc.edu/students/machine-dreams/keyword-glossary"><b class="displayTitle">Keyword Glossary</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">9. <a href="http://scalar.usc.edu/students/machine-dreams/dirichi-ike-njoku"><b class="displayTitle">Dirichi Ike-Njoku</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">10. <a href="http://scalar.usc.edu/students/machine-dreams/iryna-nadyukova"><b class="displayTitle">Iryna Nadyukova</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">11. <a href="http://scalar.usc.edu/students/machine-dreams/jiwon-shin"><b class="displayTitle">Jiwon Shin</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">12. <a href="http://scalar.usc.edu/students/machine-dreams/luis-pazos-clemens"><b class="displayTitle">Luis Pazos Clemens</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">13. <a href="http://scalar.usc.edu/students/machine-dreams/morgante-pell"><b class="displayTitle">Morgante Pell</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">14. <a href="http://scalar.usc.edu/students/machine-dreams/noor-al-mahruqi"><b class="displayTitle">Noor Al-Mahruqi</b><br><span class="displayDesc"></span></a></p><p class="mainMenuItem">15. <a href="http://scalar.usc.edu/students/machine-dreams/diana-gluck"><b class="displayTitle">Diana Gluck</b><br><span class="displayDesc"></span></a></p>
+			<form method="get" action="http://scalar.usc.edu/students/machine-dreams/search"><input value="Search" onfocus="if (this.value == 'Search') this.value = ''" onblur="if (this.value == '') this.value = 'Search'" type="text" name="sq"></form>
 		</div>
 	</div>
-						
-				</div><!--comments-->
-		</div><!--maximize_content-->
-	</div><!--maximize-->	  
-  
-</div>
-<!-- Bottom path bar -->
-<table class="path_table" cellspacing="0" cellpadding="0"><tr>
-  <td class="path_table_left"><a class="path_nav_previous_btn" href="http://scalar.usc.edu/students/machine-dreams/ethnography-of-a-mouse?path=morgante-pell" title="Ethnography of a Mouse">Previous page on path</a></td>
-  <td class="path_table_center"><a class="path_title_link" href="http://scalar.usc.edu/students/machine-dreams/morgante-pell" title="">Morgante Pell</a><span style="white-space:nowrap;">, page 2 of 2<span></td>
-  <td class="path_table_right"><a class="path_nav_next_btn" href="http://scalar.usc.edu/students/machine-dreams/index">Path end, return home</a></td>
-</tr></table>
-</div>
-</div>
-
-<div class="middle footer">
-<div id="footer">
-<!-- AddThis Button BEGIN -->
-<div class="addthis_toolbox addthis_default_style" style="float:right;">
-<a class="addthis_button_facebook"></a>
-<a class="addthis_button_google"></a>
-<a class="addthis_button_twitter"></a>
-<span class="addthis_separator">&bull;</span>
-<a href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4c40b32a7baba973" class="addthis_button_compact">More</a>
-</div>
-<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4c40b32a7baba973"></script>
-<!-- AddThis Button END -->
-<div class="scalar_logo_wrapper">
-<span class="screen-version"><a href="http://scalar.usc.edu/students/machine-dreams/telling-the-times.3.versions">Version 3</a> of this page, updated 09 December 2012<span id="version_created_by"> by <a href="http://scalar.usc.edu/students/machine-dreams/users/251">Morgante Pell</a></span>.<span id="page_created_by"> Created by <a href="http://scalar.usc.edu/students/machine-dreams/users/251">Morgante Pell</a>.</span></span><br /><span class="title-authors"><a href="http://scalar.usc.edu/students/machine-dreams">MACHINE DREAMS</a> by Alexei Taylor.  <a href="http://scalar.usc.edu/students/machine-dreams/help">Help reading this book</a>.</span><br />
-<span class="poweredby">
-Powered by <a href="http://scalar.usc.edu">Scalar</a>. </span>
-</div>
-</div>
-</div>
-
-<div class="middle editbar">
-</div>
-
+	</div>
+	<div id="content">
+		<div id="clock">
+			<canvas id="clk1" class="CoolClock:swissRail:300 myClock"></canvas>
+		</div>
+		<div id="essay">
+			<ul>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li class="active major" data-duration="5"><h5>Time</h5>In the beginning, there was no <strong>time</strong>.</li>
+				<li data-duration="5">Or, rather, there was <em>always</em> time.</li>
+				<li data-duration="10">We, humanity, were constrained by the temporality of the present.</li>
+				<li data-duration="5">Actions could only be done sequentially and they took, essentially, as long as they took.</li>
+				<li data-duration="5">Environmental factors dictated our life, from sundown to sunup.</li>
+				<li data-duration="10">Modern means of mechanization had not yet begun to annihilate time. (<a href="river-of-shadows" rel="urn:scalar:version:27787">Solnit</a>&nbsp;7)</li>
+				<li data-duration="10">We existed as fish swimming through time, with no more need to define and demarcate it than a fish has to define water.</li>
+				<li data-duration="10">Time was both everywhere and nowhere.</li>
+				
+				<li class="major" data-duration="5"><h5>Revolution</h5>Though the assault of mechanism on time had begin decades earlier, with Greek philosophers attacking its veritable basis (On Truth), the industrial revolution struck a fearsome blow against old Kronos.</li>
+				<li data-duration="33" class="video">
+					<iframe width="640" height="480" src="http://www.youtube.com/embed/mudOonoGK_U" frameborder="0" allowfullscreen></ifram
+				</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10" class="last">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+				<li data-duration="10">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+			</ul>
+		</div>
+	</div>
 </body>
 </html>

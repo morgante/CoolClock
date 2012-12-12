@@ -1,8 +1,61 @@
-/**	REMOVE SCALAR **/
+/* hide scalar */
+html {
+	overflow: hidden; /* disable scrolling */
+}
 body {
-	background-color: #FFFFFF !important;
+	background-color: #FFFFFF;
 	background-image: none !important;
 }
-.left {
+.middle.cover, .pathnavs, .middle.footer {
 	display: none;
+}
+#content_wrapper {
+	background: transparent;
+}
+.path_table {
+	position: absolute;
+	top: 800px;
+	left: 0;
+}
+
+#reply_list {
+	position: absolute;
+	top: 750px;
+}
+
+/* format clock/essay */
+#clock {
+	position: fixed;
+	left: 200px;
+	top: 120px;
+}
+#essay {
+	display: block;
+	width: 900px;
+	position: absolute;
+	top: 0;
+	left: 1000px;
+	font-size: 140%;
+}
+#essay ul, #essay li {
+	list-style: none;
+}
+#essay li {
+	position: relative;
+	opacity: 1;
+	line-height: 1.2em;
+}
+/* Major Times */
+#essay li.major {
+	font-size: 140%;
+}
+#essay li.major h5 {
+	font-size: 100%;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	top: 0px;
+	left: -150px;
+	width: 140px;
+	text-align: right;
 }

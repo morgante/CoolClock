@@ -1,4 +1,4 @@
-
+	
 // Constructor for CoolClock objects
 window.CoolClock = function(options) {
 	return this.init(options);
@@ -22,11 +22,12 @@ CoolClock.config = {
 		// Try making your own skin by copy/pasting one of these and tweaking it
 		swissRail: {
 			outerBorder: { lineWidth: 2, radius:95, color: "black", alpha: 1 },
-			smallIndicator: { lineWidth: 2, startAt: 88, endAt: 92, color: "black", alpha: 1 },
-			largeIndicator: { lineWidth: 4, startAt: 79, endAt: 92, color: "black", alpha: 1 },
-			hourHand: { lineWidth: 8, startAt: -15, endAt: 50, color: "black", alpha: 1 },
-			minuteHand: { lineWidth: 7, startAt: -15, endAt: 75, color: "black", alpha: 1 },
-			secondHand: { lineWidth: 1, startAt: -20, endAt: 85, color: "red", alpha: 1 },
+			smallIndicator: { lineWidth: 1, startAt: 88, endAt: 92, color: "black", alpha: 1 },
+			largeIndicator: { lineWidth: 4, startAt: 79, endAt: 92, color: "black", alpha: 1, font: "8px sans-serif" },
+			hugeIndicator: { lineWidth: 4, startAt: 70, endAt: 92, color: "black", alpha: 1, font: "20px sans-serif" },
+/* 			hourHand: { lineWidth: 8, startAt: -15, endAt: 50, color: "black", alpha: 1 }, */
+/* 			minuteHand: { lineWidth: 7, startAt: -15, endAt: 75, color: "black", alpha: 1 }, */
+			secondHand: { lineWidth: 1, startAt: 0, endAt: 85, color: "red", alpha: 1 },
 			secondDecoration: { lineWidth: 1, startAt: 70, radius: 4, fillColor: "red", color: "red", alpha: 1 }
 		},
 		chunkySwiss: {
@@ -105,11 +106,7 @@ CoolClock.prototype = {
 		CoolClock.config.clockTracker[this.canvasId] = this;
 
 		// should we be running the clock?
-		this.active = true;
-		this.tickTimeout = null;
-
-		// Start the clock going
-		this.tick();
+		this.render(0);
 
 		return this;
 	},
@@ -170,15 +167,15 @@ CoolClock.prototype = {
 		// Log algorithm by David Bradshaw
 		var tweak = 3; // If it's lower the one second mark looks wrong (?)
 		if (this.logClock) {
-			return second == 0 ? 0 : (Math.log(second*tweak) / Math.log(60*tweak));
+			return second == 0 ? 0 : (Math.log(second*tweak) / Math.log(720*tweak));
 		}
 		else if (this.logClockRev) {
 			// Flip the seconds then flip the angle (trickiness)
-			second = (60 - second) % 60;
-			return 1.0 - (second == 0 ? 0 : (Math.log(second*tweak) / Math.log(60*tweak)));
+			second = (720 - second) % 720;
+			return 1.0 - (second == 0 ? 0 : (Math.log(second*tweak) / Math.log(720*tweak)));
 		}
 		else {
-			return second/60.0;
+			return second/720.0;
 		}
 	},
 
@@ -201,7 +198,6 @@ CoolClock.prototype = {
 		this.ctx.globalAlpha = skin.alpha;
 		this.ctx.strokeStyle = skin.color;
 		this.ctx.lineWidth = skin.lineWidth;
-
 		if (CoolClock.config.isIE)
 			// excanvas doesn't scale line width so we will do it here
 			this.ctx.lineWidth = this.ctx.lineWidth * this.scale;
@@ -218,7 +214,35 @@ CoolClock.prototype = {
 		this.ctx.restore();
 	},
 
-	render: function(hour,min,sec) {
+	textAtAngle: function(theText,angleFraction,skin) {
+		this.ctx.save();
+		this.ctx.translate(this.renderRadius,this.renderRadius);
+		this.ctx.rotate((Math.PI * (2.0 * angleFraction - 0.5)));		
+		this.ctx.font = skin.font;
+		
+		var tSize = this.ctx.measureText(theText);
+		// TextMetrics rarely returns a height property: use baseline instead.
+		if (!tSize.height) {
+			tSize.height = 0;
+			this.ctx.textBaseline = 'middle';
+		}
+				
+		if( angleFraction > 0.5 )
+		{
+			this.ctx.rotate(Math.PI);
+			this.ctx.translate(-(this.renderRadius),0);
+			this.ctx.fillText(theText, (this.renderRadius - skin.startAt), 0);
+		}
+		else
+		{
+			this.ctx.fillText(theText, this.renderRadius-tSize.width-(this.renderRadius-skin.startAt)-1, 0);
+		}
+				
+								
+		this.ctx.restore();
+	},
+
+	render: function(sec) {
 		// Get the skin
 		var skin = this.getSkin();
 
@@ -229,95 +253,37 @@ CoolClock.prototype = {
 		if (skin.outerBorder)
 			this.fullCircleAt(this.renderRadius,this.renderRadius,skin.outerBorder);
 
+		// Store clock labels here; probably should be elsewhere
+		var labels = {
+			0: "Time",
+			60: "Revolution",
+			120: "Enterprise",
+			180: "Film",
+			360: "Plot",
+			540: "Story"
+		}
+
 		// Draw the tick marks. Every 5th one is a big one
-		for (var i=0;i<60;i++) {
-			(i%5)  && skin.smallIndicator && this.radialLineAtAngle(this.tickAngle(i),skin.smallIndicator);
-			!(i%5) && skin.largeIndicator && this.radialLineAtAngle(this.tickAngle(i),skin.largeIndicator);
+		for (var i=0;i<720;i++) {
+			if(!(i%180)) {
+				this.textAtAngle(labels[i],this.tickAngle(i),skin.hugeIndicator);
+				this.radialLineAtAngle(this.tickAngle(i),skin.hugeIndicator);
+			} else if(!(i%60)) {
+				this.textAtAngle(labels[i],this.tickAngle(i),skin.largeIndicator,50);
+				this.radialLineAtAngle(this.tickAngle(i),skin.largeIndicator);
+			} else if(!(i%5))  {
+				this.radialLineAtAngle(this.tickAngle(i),skin.smallIndicator)
+			}
 		}
-
-		// Write the time
-		if (this.showDigital) {
-			this.drawTextAt(
-				this.timeText(hour,min,sec),
-				this.renderRadius,
-				this.renderRadius+this.renderRadius/2
-			);
-		}
-
-		var hourA = (hour%12)*5 + min/12.0,
-		    minA = min + sec/60.0,
-		    secA = sec;
-
+				
 		// Draw the hands
-		if (skin.hourHand)
-			this.radialLineAtAngle(this.tickAngle(hourA),skin.hourHand);
-
-		if (skin.minuteHand)
-			this.radialLineAtAngle(this.tickAngle(minA),skin.minuteHand);
-
-		if (this.showSecondHand && skin.secondHand)
-			this.radialLineAtAngle(this.tickAngle(secA),skin.secondHand);
-
-		// Hands decoration - not in IE
-		if  (!CoolClock.config.isIE) {
-			if (skin.hourDecoration)
-				this.radialLineAtAngle(this.tickAngle(hourA), skin.hourDecoration);
-
-			if (skin.minDecoration)
-				this.radialLineAtAngle(this.tickAngle(minA), skin.minDecoration);
-
-			if (this.showSecondHand && skin.secondDecoration)
-				this.radialLineAtAngle(this.tickAngle(secA),skin.secondDecoration);
-		}
+		if (skin.secondDecoration)
+			this.radialLineAtAngle(this.tickAngle(sec),skin.secondDecoration);
+						
+		this.radialLineAtAngle(this.tickAngle(sec),skin.secondHand);
 
 		if (this.extraRender) {
 			this.extraRender(hour,min,sec);
-		}
-	},
-
-	// Check the time and display the clock
-	refreshDisplay: function() {
-		var now = new Date();
-		if (this.gmtOffset != null) {
-			// Use GMT + gmtOffset
-			var offsetNow = new Date(now.valueOf() + (this.gmtOffset * 1000 * 60 * 60));
-			this.render(offsetNow.getUTCHours(),offsetNow.getUTCMinutes(),offsetNow.getUTCSeconds());
-		}
-		else {
-			// Use local time
-			this.render(now.getHours(),now.getMinutes(),now.getSeconds());
-		}
-	},
-
-	// Set timeout to trigger a tick in the future
-	nextTick: function() {
-		this.tickTimeout = setTimeout("CoolClock.config.clockTracker['"+this.canvasId+"'].tick()",this.tickDelay);
-	},
-
-	// Check the canvas element hasn't been removed
-	stillHere: function() {
-		return document.getElementById(this.canvasId) != null;
-	},
-
-	// Stop this clock
-	stop: function() {
-		this.active = false;
-		clearTimeout(this.tickTimeout);
-	},
-
-	// Start this clock
-	start: function() {
-		if (!this.active) {
-			this.active = true;
-			this.tick();
-		}
-	},
-
-	// Main tick handler. Refresh the clock then setup the next tick
-	tick: function() {
-		if (this.stillHere() && this.active) {
-			this.refreshDisplay()
-			this.nextTick();
 		}
 	},
 
@@ -325,6 +291,33 @@ CoolClock.prototype = {
 		var skin = CoolClock.config.skins[this.skinId];
 		if (!skin) skin = CoolClock.config.skins[CoolClock.config.defaultSkin];
 		return skin;
+	},
+	
+	getSec: function(x, y)
+	{
+		x = x - this.displayRadius;
+		y = this.displayRadius - y;
+		
+		angle = Math.atan2(y,x);
+		
+		sec = angle/Math.PI;
+		sec = Math.round( sec*360);
+		
+		if( sec < 0 )
+		{
+			sec = 180 + Math.abs(sec);
+		}
+		else if( sec > 180 )
+		{
+			sec = 540 + (360 - sec );
+		}
+		else
+		{
+			sec = 180 - sec;
+		}
+		
+		return sec;
+				
 	}
 };
 
@@ -355,6 +348,136 @@ CoolClock.findAndCreateClocks = function() {
 	}
 };
 
-// If you don't have jQuery then you need a body onload like this: <body onload="CoolClock.findAndCreateClocks()">
-// If you do have jQuery and it's loaded already then we can do it right now
-if (window.jQuery) jQuery(document).ready(CoolClock.findAndCreateClocks);
+// Handle our scrolling magic
+writtenChronograph = {
+	buildChrono: function()
+	{
+		var t = 0;
+		var li = $('#essay li.active');
+		
+		while( t < 721)
+		{
+			li.attr('data-time', t);
+			t = t + parseInt(li.attr('data-duration'));
+			li = li.next();
+		}
+		
+		// duplicate last 12 minutes and put them at beginning
+	},
+	getClock: function()
+	{
+		return CoolClock.config.clockTracker.clk1;
+	},
+	refreshClock: function()
+	{
+		// sec = Math.round( 720 * this.getPosition());
+				
+		this.getClock().render( $('#essay li.active').attr('data-time') );
+	},
+	getPosition: function()
+	{
+		var s = $(window).scrollTop();
+		d = $(document).height();
+		c = $(window).height();
+		scrollPercent = (s / (d-c));
+		
+		return scrollPercent;
+	},
+	checkPosition: function()
+	{
+		// refresh the clock
+		this.refreshClock();
+		
+		// keep the active element in view
+		target = 400;
+		console.log( $('li.active') );
+		if( $('li.active').offset().top != target )
+		{			
+			$('#essay').css('top', parseInt($('#essay').css('top')) + (target - $('li.active').offset().top));
+		}
+		
+		// update opacities
+		$('li').css('opacity',0);
+		$('li.active').css('opacity',1);
+		
+		var nexter = $('li.active').next();
+		var prever = $('li.active').prev();
+		for (var i=0;i<5;i++) {
+			nexter.add(prever).css('opacity',( 0.5 - i/10));
+			nexter = nexter.next();
+			prever = prever.prev();
+		}
+		// setTimeout("writtenChronograph.checkPosition();", 5);
+	},
+	nextItem: function()
+	{
+		if( !$('li.active').hasClass('last') )
+		{
+			writtenChronograph.activate( $('li.active').next() );
+		}
+	},
+	activate: function( li )
+	{
+		$('li.active').removeClass('active');
+		li.addClass('active');
+		writtenChronograph.checkPosition();
+		
+		if( $('object', li)[0] )
+		{
+			ytplayer = document.getElementById("myytplayer");
+			ytplayer.playVideo();
+		}
+		
+	},
+	goTo: function( sec )
+	{
+		li = $('#essay li:first');
+		while( li.next().length > 0 )
+		{
+			if( li.next().attr('data-time') > sec )
+			{
+				writtenChronograph.activate( li );
+				break;
+			}
+			li = li.next();
+		}
+	},
+	init: function() {
+		writtenChronograph.buildChrono();
+		writtenChronograph.checkPosition();
+		
+		// allow us to click in the chronograph
+		$('canvas').click(function(v){
+			var mX = v.pageX - $('canvas').offset().left;
+			var mY = v.pageY - $('canvas').offset().top;
+			
+			sec = writtenChronograph.getClock().getSec(mX, mY);
+			
+			writtenChronograph.goTo( sec );
+
+	    });
+		
+		// bind to down arrow
+		$(document).keydown(function(e){
+			if( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 )
+			{
+				// prevent keyboard scrolling
+				return false;
+			}
+			else if (e.keyCode == 40) { 
+				writtenChronograph.nextItem();
+				return false;
+		    }
+		});
+		
+	}
+}
+
+function onYouTubePlayerReady(playerId) {
+      ytplayer = document.getElementById("myytplayer");
+    }
+
+$(document).ready(function() {
+	CoolClock.findAndCreateClocks();
+	writtenChronograph.init();
+});
