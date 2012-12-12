@@ -259,8 +259,14 @@ CoolClock.prototype = {
 			60: "Revolution",
 			120: "Enterprise",
 			180: "Film",
+			240: "Deconstruction",
+			300: "Immortality",
 			360: "Plot",
-			540: "Story"
+			420: "Sound",
+			480: "Environment",
+			540: "Story",
+			600: "Speed",
+			660: "Altar"
 		}
 
 		// Draw the tick marks. Every 5th one is a big one
@@ -390,7 +396,6 @@ writtenChronograph = {
 		
 		// keep the active element in view
 		target = 400;
-		console.log( $('li.active') );
 		if( $('li.active').offset().top != target )
 		{			
 			$('#essay').css('top', parseInt($('#essay').css('top')) + (target - $('li.active').offset().top));
