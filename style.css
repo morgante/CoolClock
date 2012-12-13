@@ -17,10 +17,12 @@ body {
 	top: 800px;
 	left: 0;
 }
-
 #reply_list {
 	position: absolute;
 	top: 750px;
+}
+#scalarnav {
+	width: 150px;
 }
 
 /* format clock/essay */
@@ -50,7 +52,7 @@ body {
 	font-size: 140%;
 }
 #essay li.major h5 {
-	font-size: 100%;
+	font-size: 60%;
 	margin: 0;
 	padding: 0;
 	position: absolute;

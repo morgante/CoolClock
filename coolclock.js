@@ -70,7 +70,7 @@ CoolClock.prototype = {
 		this.canvasId       = options.canvasId;
 		this.skinId         = options.skinId || CoolClock.config.defaultSkin;
 		this.font           = options.font || CoolClock.config.defaultFont;
-		this.displayRadius  = options.displayRadius || CoolClock.config.defaultRadius;
+		this.displayRadius  = ($(window).width() - 250)/4;
 		this.renderRadius   = options.renderRadius || CoolClock.config.renderRadius;
 		this.showSecondHand = typeof options.showSecondHand == "boolean" ? options.showSecondHand : true;
 		this.gmtOffset      = (options.gmtOffset != null && options.gmtOffset != '') ? parseFloat(options.gmtOffset) : null;
@@ -416,7 +416,11 @@ writtenChronograph = {
 	},
 	nextItem: function()
 	{
-		if( !$('li.active').hasClass('last') )
+		if( $('li.active').hasClass('last') )
+		{
+			writtenChronograph.activate( $('#essay li.first').next() );
+		}
+		else
 		{
 			writtenChronograph.activate( $('li.active').next() );
 		}
@@ -448,9 +452,14 @@ writtenChronograph = {
 		}
 	},
 	init: function() {
+		
+		unit = ($(window).width() - 500)/2;
+		
+		$('#essay').css('width', unit).css('left', unit + 450);
+		
 		writtenChronograph.buildChrono();
 		writtenChronograph.checkPosition();
-		
+						
 		// allow us to click in the chronograph
 		$('canvas').click(function(v){
 			var mX = v.pageX - $('canvas').offset().left;
